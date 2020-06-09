@@ -18,6 +18,8 @@ def analyze(request):
     extraspaceremover = request.POST.get('extraspaceremover', 'off')
     numberremover = request.POST.get('numberremover','off')
 
+    params = {'purpose': '', 'analyzed_text': ''}
+
     #Check which checkbox is on
     if removepunc == "on":
         punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
@@ -26,15 +28,16 @@ def analyze(request):
             if char not in punctuations:
                 analyzed = analyzed + char
 
-        params = {'purpose':'Removed Punctuations', 'analyzed_text': analyzed}
+        params = {'purpose': params['purpose']+'removed punctuations', 'analyzed_text': analyzed}
         djtext = analyzed
 
     if(fullcaps=="on"):
         analyzed = ""
         for char in djtext:
             analyzed = analyzed + char.upper()
-
-        params = {'purpose': 'Changed to Uppercase', 'analyzed_text': analyzed}
+        if params['purpose'] != '':
+            params['purpose'] += ', '
+        params = {'purpose': params['purpose']+'changed to uppercase', 'analyzed_text': analyzed}
         djtext = analyzed
 
     if(extraspaceremover=="on"):
@@ -48,7 +51,9 @@ def analyze(request):
             elif not(djtext[index] == " " and djtext[index+1]==" "):                        
                 analyzed = analyzed + char
 
-        params = {'purpose': 'Removed NewLines', 'analyzed_text': analyzed}
+        if params['purpose'] != '':
+            params['purpose'] += ', '
+        params = {'purpose': params['purpose']+'extra spaces removed', 'analyzed_text': analyzed}
         djtext = analyzed
 
     if (newlineremover == "on"):
@@ -57,7 +62,9 @@ def analyze(request):
             if char != "\n" and char!="\r":
                 analyzed = analyzed + char
 
-        params = {'purpose': 'Removed NewLines', 'analyzed_text': analyzed}
+        if params['purpose'] != '':
+            params['purpose'] += ', '
+        params = {'purpose': params['purpose']+'removed new lines', 'analyzed_text': analyzed}
     
     if (numberremover == "on"):
         analyzed = ""
@@ -66,8 +73,10 @@ def analyze(request):
         for char in djtext:
             if char not in numbers:
                 analyzed = analyzed + char
-        
-        params = {'purpose': 'Removed NewLines', 'analyzed_text': analyzed}
+
+        if params['purpose'] != '':
+            params['purpose'] += ', '
+        params = {'purpose': params['purpose']+'removed numbers', 'analyzed_text': analyzed}
         djtext = analyzed
 
     
